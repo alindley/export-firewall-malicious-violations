@@ -77,7 +77,7 @@ def run_export(repo_id):
 
 # Function to list repository managers
 def list_repository_managers():
-    response = requests.get(f"{IQ_SERVER_URL}/api/v2/firewall/repositoryManagers", auth=tuple(CREDENTIALS.split(":")))
+    response = requests.get(f"{IQ_SERVER_URL}/api/v2/firewall/repositoryManagers", auth=(USERNAME, PASSWORD))
     print(json.dumps(response.json(), indent=2))
 
 # Main function to handle command-line arguments
