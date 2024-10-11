@@ -12,8 +12,8 @@ PASSWORD = "admin123"
 MALICIOUS_POLICY_NAME = "Security-Malicious"
 
 def usage():
-    print("Usage: script.py list/export [...]")
-    print("  - list: list repository managers added to IQ server to get the Nexus Repository id")
+    print("Usage: export-firewall-malicious-violations.py list/export [...]")
+    print("  - list: list repository managers added to your IQ server to get the Nexus Repository id")
     print("  - export <id>: This must be the Nexus Repository 'id' NOT the 'instanceId'")
     sys.exit(1)
 
