@@ -40,25 +40,38 @@ def run_export(repo_id):
             public_id = repo.get('publicId')
             repo_map[repository_id] = public_id
 
-        repo_results_response = requests.post(f"{IQ_SERVER_URL}/api/experimental/repositories/repository_manager/{repo_id}/results/details",
-                                              headers={'Content-Type': 'application/json'},
-                                              auth=(USERNAME, PASSWORD),
-                                              json={
-                                                  "page": 1,
-                                                  "pageSize": 10000,
-                                                  "searchFilters": [
-                                                      {"filterableField": "POLICY_NAME",
-                                                       "value": MALICIOUS_POLICY_NAME}
-                                                  ],
-                                                  "matchStateFilters": ["MATCH_STATE_ALL"],
-                                                  "violationStateFilters": ["VIOLATION_STATE_ALL"],
-                                                  "sortFields": [
-                                                      {"sortableField": "COMPONENT_COORDINATES",
-                                                       "asc": False,
-                                                       "sortPriority": 1}
-                                                  ],
-                                                  "aggregate": False
-                                              }).json()
+        repo_results_raw_response = requests.post(
+            f"{IQ_SERVER_URL}/api/experimental/repositories/repository_manager/{repo_id}/results/details",
+            headers={'Content-Type': 'application/json'},
+            auth=(USERNAME, PASSWORD),
+            json={
+                "page": 1,
+                "pageSize": 10000,
+                "searchFilters": [
+                    {"filterableField": "POLICY_NAME", "value": MALICIOUS_POLICY_NAME}
+                ],
+                "matchStateFilters": ["MATCH_STATE_ALL"],
+                "violationStateFilters": ["VIOLATION_STATE_ALL"],
+                "sortFields": [
+                    {"sortableField": "COMPONENT_COORDINATES", "asc": False, "sortPriority": 1}
+                ],
+                "aggregate": False
+            }
+        )
+
+        # Check the status code before parsing JSON
+        if repo_results_raw_response.status_code != 200:
+            print(f"Error fetching repository results: {repo_results_raw_response.status_code}")
+            print("Response:", repo_results_raw_response.text)
+            return
+
+        # Parse JSON safely
+        try:
+            repo_results_response = repo_results_raw_response.json()
+        except json.JSONDecodeError:
+            print("Error decoding JSON response for repository results.")
+            print("Response:", repo_results_raw_response.text)
+            return
 
         # Write results to CSV
         for result in repo_results_response.get('repositoryResultsDetails', []):
